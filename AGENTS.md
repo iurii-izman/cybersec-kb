@@ -2,13 +2,17 @@
 
 Постоянные правила для любой автоматизированной работы с этим Vault.
 
-## Architecture
+## Preserve architecture
 
 Использовать только сущности Concept, Technique, Tool, Lab и, при накопленной практике, Cheatsheet. Не добавлять новый тип без явного утверждения пользователя. Центр структуры — Technique, а не Tool.
 
-## No duplication
+## Search before create
 
 Перед созданием заметки искать существующую сущность по имени и смыслу. Если она уже существует, дополнять её и связывать wikilink. Одна идея должна иметь одно основное место хранения.
+
+## Technique-first
+
+Каждый Tool связывать с задачей или Technique. Не каталогизировать knowledge graph только вокруг инструментов и команд.
 
 ## Course independence
 
@@ -20,11 +24,19 @@ TryHackMe, Hack The Box и PortSwigger — источники практики, 
 
 ## Preserve human knowledge
 
-Не удалять пользовательские observations, mistakes, conclusions и interpretations без явной причины. При реорганизации сохранять исходный смысл и ссылки.
+Не переписывать и не удалять пользовательские mistakes, observations, interpretations, conclusions, `what confused me` и decision reasoning без явной необходимости. При реорганизации сохранять исходный смысл и ссылки.
+
+## No encyclopedic inflation
+
+Не превращать заметки в копии документации, walkthrough или `--help`. Сохранять только материал, который помогает понять, применить, интерпретировать или повторить знание.
 
 ## Minimal architecture
 
 Не добавлять плагины, frameworks, dependencies, новые Properties или типы сущностей без реальной необходимости. Vault должен оставаться обычной переносимой Markdown-директорией.
+
+## No autonomous v0.2
+
+Без явного запроса пользователя не добавлять Dataview, Anki, MITRE/OWASP mappings, AI ingestion, automation, dashboards, Procedures/Playbooks или новые сущности.
 
 ## Properties and naming
 
@@ -34,6 +46,6 @@ TryHackMe, Hack The Box и PortSwigger — источники практики, 
 
 Практические security-примеры допустимы только для labs, CTF, owned systems и explicitly authorized environments. Использовать placeholders `TARGET`, `http://TARGET/` и `/path/`; не заменять их реальными внешними targets. Не сохранять credentials, tokens и другие secrets.
 
-## Validation
+## Validate before commit
 
-После структурных изменений запускать `python scripts/validate_kb.py`. Validator read-only; не изменять заметки автоматически для сокрытия ошибок.
+Перед завершением изменений запускать `python -m unittest discover` и `python scripts/validate_kb.py`, затем просматривать `git diff` и `git diff --check`. Validator read-only; не изменять заметки автоматически для сокрытия ошибок.

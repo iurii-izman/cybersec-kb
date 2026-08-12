@@ -26,29 +26,60 @@ scripts/            read-only проверка Vault
 Home.md             ручная стартовая карта
 ```
 
-## Как добавить знание
+## Daily / Room workflow
 
-1. Во время занятия быстро записать материал в `00 Inbox`.
-2. Определить: Concept, Technique, Tool или информация только для Lab.
-3. Поискать существующую сущность и дополнить её; не создавать дубль.
-4. Для новой сущности скопировать подходящий файл из `90 Templates`.
-5. Добавить осмысленные `[[wikilinks]]` и обновить Lab.
+```text
+Start THM Room
+  ↓
+Capture raw notes in 00 Inbox
+  ↓
+Finish a meaningful section
+  ↓
+Create or update the Lab
+  ↓
+Extract reusable knowledge
+  ↓
+Update existing Concepts / Techniques / Tools
+  ↓
+Create only genuinely new entities
+  ↓
+Link notes → validate → review diff → commit
+```
 
 После TryHackMe фиксировать не пересказ комнаты, а новое знание, ход практики, ошибки и выводы. Практические шаги оформлять как Goal → Action → Evidence → Interpretation → Next Step. Использовать команды только в собственных, учебных или явно разрешённых средах.
 
+`00 Inbox` — временный capture, а не архив. Во время урока сырые заметки допустимы; после законченного смыслового блока reusable knowledge переносится в Concepts, Techniques и Tools, а практический контекст остаётся в Lab. Не нужно очищать Inbox после каждого действия, но его следует периодически разбирать.
+
+Перед созданием постоянной заметки найти существующую сущность по имени и смыслу. Если её нет, скопировать подходящий файл из `90 Templates`, заменить placeholders и добавить осмысленные `[[wikilinks]]`.
+
+## Первый Field Test
+
+Ближайшие 3–5 реальных TryHackMe Labs используются для проверки текущей архитектуры. До их завершения не добавлять новые architectural layers без наблюдаемой проблемы. Отмечать простыми наблюдениями: ambiguity классификации, дублирование, затраты времени, неудобство навигации, забываемые знания и повторяющиеся workflows. Это не метрики и не повод заранее переходить к v0.2.
+
 ## Открытие в Obsidian
 
-Выберите **Open folder as vault** и укажите папку `cybersec-kb`. При необходимости включите встроенный плагин **Templates**, затем в его настройках укажите `90 Templates` как Template folder location. Специальная `.obsidian`-конфигурация не требуется.
+Выберите **Open folder as vault** и укажите `C:\Dev\cybersec-kb`. Включите core plugin **Templates**, затем задайте `90 Templates` как **Template folder location**. Специальная `.obsidian`-конфигурация не требуется.
 
 ## Проверка
 
 Нужен только Python 3; внешних пакетов нет:
 
 ```powershell
+python -m unittest discover
 python scripts/validate_kb.py
 ```
 
-Validator только читает файлы и возвращает ненулевой exit code при ошибке. Его упрощённая проверка YAML намеренно не заменяет полный YAML parser.
+Unit tests проверяют позитивный fixture, основные ошибки и read-only поведение. Validator только читает файлы и возвращает ненулевой exit code при ошибке. Его упрощённая проверка YAML намеренно не заменяет полный YAML parser.
+
+После успешной проверки просмотреть и сохранить понятный блок работы:
+
+```powershell
+git status --short
+git diff
+git add --all
+git diff --cached
+git commit -m "Add THM room notes"
+```
 
 Подробные Properties и naming rules: [docs/Conventions.md](docs/Conventions.md).
 

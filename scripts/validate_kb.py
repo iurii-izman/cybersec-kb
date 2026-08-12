@@ -9,7 +9,7 @@ from collections import defaultdict
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_DIRECTORIES = (
     "00 Inbox",
@@ -62,6 +62,7 @@ REQUIRED_PROPERTIES = {
 }
 ALLOWED_TYPES = {"concept", "technique", "tool", "lab", "cheatsheet"}
 ALLOWED_STATUSES = {"new", "learned", "practiced", "confident"}
+LIST_PROPERTIES = ("domain", "techniques", "source")
 
 TOP_LEVEL_KEY = re.compile(r"^([A-Za-z][A-Za-z0-9_-]*):(?:\s*(.*))?$")
 LIST_ITEM = re.compile(r"^\s+-\s+(.+?)\s*$")
@@ -69,8 +70,8 @@ WIKILINK = re.compile(r"\[\[([^\[\]]+)\]\]")
 FENCE = re.compile(r"^\s*```")
 
 
-def relative(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
+def relative(path: Path, root: Path) -> str:
+    return path.relative_to(root).as_posix()
 
 
 def unquote(value: str) -> str:
@@ -80,11 +81,13 @@ def unquote(value: str) -> str:
     return value
 
 
-def parse_frontmatter(path: Path, errors: list[str]) -> dict[str, object] | None:
+def parse_frontmatter(
+    path: Path, root: Path, errors: list[str]
+) -> dict[str, object] | None:
     """Parse the small YAML subset used by the Vault without third-party packages."""
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
-    label = relative(path)
+    label = relative(path, root)
 
     if not lines or lines[0].strip() != "---":
         errors.append(f"{label}: missing opening YAML delimiter")
@@ -135,76 +138,91 @@ def parse_frontmatter(path: Path, errors: list[str]) -> dict[str, object] | None
     return properties
 
 
-def knowledge_files() -> list[Path]:
+def knowledge_files(root: Path) -> list[Path]:
     paths: list[Path] = []
     for directory in KNOWLEDGE_DIRECTORIES:
-        paths.extend((ROOT / directory).rglob("*.md"))
+        paths.extend((root / directory).rglob("*.md"))
     return sorted(paths)
 
 
-def maintained_markdown_files() -> list[Path]:
-    excluded = {ROOT / "CyberSec_KB_v0.1_start_TZ.md"}
-    return sorted(path for path in ROOT.rglob("*.md") if path not in excluded)
+def maintained_markdown_files(root: Path) -> list[Path]:
+    excluded = {root / "CyberSec_KB_v0.1_start_TZ.md"}
+    return sorted(path for path in root.rglob("*.md") if path not in excluded)
 
 
-def validate_structure(errors: list[str]) -> None:
+def validate_structure(root: Path, errors: list[str]) -> None:
     for directory in REQUIRED_DIRECTORIES:
-        if not (ROOT / directory).is_dir():
+        if not (root / directory).is_dir():
             errors.append(f"missing required directory: {directory}")
     for filename in REQUIRED_FILES:
-        if not (ROOT / filename).is_file():
+        if not (root / filename).is_file():
             errors.append(f"missing required file: {filename}")
 
 
-def validate_properties(errors: list[str]) -> None:
-    paths = knowledge_files() + sorted((ROOT / "90 Templates").glob("*.md"))
+def validate_properties(root: Path, errors: list[str]) -> None:
+    paths = knowledge_files(root) + sorted((root / "90 Templates").glob("*.md"))
     for path in paths:
-        properties = parse_frontmatter(path, errors)
+        properties = parse_frontmatter(path, root, errors)
         if properties is None:
             continue
 
         missing = REQUIRED_PROPERTIES - properties.keys()
         if missing:
             errors.append(
-                f"{relative(path)}: missing properties: {', '.join(sorted(missing))}"
+                f"{relative(path, root)}: missing properties: {', '.join(sorted(missing))}"
             )
 
+        unexpected = properties.keys() - REQUIRED_PROPERTIES
+        if unexpected:
+            errors.append(
+                f"{relative(path, root)}: unsupported properties: "
+                f"{', '.join(sorted(unexpected))}"
+            )
+
+        for key in LIST_PROPERTIES:
+            if key in properties and not isinstance(properties[key], list):
+                errors.append(f"{relative(path, root)}: property '{key}' must be a list")
+
         note_type = properties.get("type")
-        if note_type not in ALLOWED_TYPES:
-            errors.append(f"{relative(path)}: invalid type: {note_type!r}")
+        if not isinstance(note_type, str) or note_type not in ALLOWED_TYPES:
+            errors.append(f"{relative(path, root)}: invalid type: {note_type!r}")
 
         status = properties.get("status")
-        if status not in ALLOWED_STATUSES:
-            errors.append(f"{relative(path)}: invalid status: {status!r}")
+        if not isinstance(status, str) or status not in ALLOWED_STATUSES:
+            errors.append(f"{relative(path, root)}: invalid status: {status!r}")
 
         confidence = properties.get("confidence")
         try:
             numeric_confidence = int(str(confidence))
         except (TypeError, ValueError):
-            errors.append(f"{relative(path)}: confidence must be an integer from 1 to 5")
+            errors.append(
+                f"{relative(path, root)}: confidence must be an integer from 1 to 5"
+            )
         else:
             if numeric_confidence not in range(1, 6):
-                errors.append(f"{relative(path)}: confidence must be from 1 to 5")
+                errors.append(
+                    f"{relative(path, root)}: confidence must be from 1 to 5"
+                )
 
 
-def validate_fences(errors: list[str]) -> None:
-    for path in maintained_markdown_files():
+def validate_fences(root: Path, errors: list[str]) -> None:
+    for path in maintained_markdown_files(root):
         fence_count = sum(
             1
             for line in path.read_text(encoding="utf-8").splitlines()
             if FENCE.match(line)
         )
         if fence_count % 2:
-            errors.append(f"{relative(path)}: unpaired fenced code block")
+            errors.append(f"{relative(path, root)}: unpaired fenced code block")
 
 
-def validate_duplicates(errors: list[str]) -> None:
+def validate_duplicates(root: Path, errors: list[str]) -> None:
     by_name: dict[str, list[Path]] = defaultdict(list)
-    for path in knowledge_files():
+    for path in knowledge_files(root):
         by_name[path.stem.casefold()].append(path)
     for paths in by_name.values():
         if len(paths) > 1:
-            joined = ", ".join(relative(path) for path in paths)
+            joined = ", ".join(relative(path, root) for path in paths)
             errors.append(f"duplicate knowledge-note filename/entity: {joined}")
 
 
@@ -215,30 +233,43 @@ def normalize_link_target(raw_target: str) -> str:
     return target.rsplit("/", 1)[-1].strip().casefold()
 
 
-def validate_wikilinks(errors: list[str]) -> None:
+def validate_wikilinks(root: Path, errors: list[str]) -> None:
     all_note_names: dict[str, list[Path]] = defaultdict(list)
-    for path in ROOT.rglob("*.md"):
+    for path in root.rglob("*.md"):
         all_note_names[path.stem.casefold()].append(path)
 
-    checked_paths = knowledge_files() + [ROOT / "Home.md"]
+    checked_paths = knowledge_files(root) + [root / "Home.md"]
     for path in checked_paths:
+        if not path.is_file():
+            continue
         text = path.read_text(encoding="utf-8")
         for match in WIKILINK.finditer(text):
             raw_target = match.group(1)
             target = normalize_link_target(raw_target)
             if not target:
-                errors.append(f"{relative(path)}: empty wikilink [[{raw_target}]]")
+                errors.append(
+                    f"{relative(path, root)}: empty wikilink [[{raw_target}]]"
+                )
             elif target not in all_note_names:
-                errors.append(f"{relative(path)}: broken wikilink [[{raw_target}]]")
+                errors.append(
+                    f"{relative(path, root)}: broken wikilink [[{raw_target}]]"
+                )
+
+
+def validate(root: Path = DEFAULT_ROOT) -> list[str]:
+    """Return validation errors without modifying the Vault."""
+    root = root.resolve()
+    errors: list[str] = []
+    validate_structure(root, errors)
+    validate_properties(root, errors)
+    validate_fences(root, errors)
+    validate_duplicates(root, errors)
+    validate_wikilinks(root, errors)
+    return errors
 
 
 def main() -> int:
-    errors: list[str] = []
-    validate_structure(errors)
-    validate_properties(errors)
-    validate_fences(errors)
-    validate_duplicates(errors)
-    validate_wikilinks(errors)
+    errors = validate(DEFAULT_ROOT)
 
     if errors:
         print(f"FAIL: {len(errors)} error(s)")
@@ -247,7 +278,10 @@ def main() -> int:
         return 1
 
     print("PASS: CyberSec Knowledge Base v0.1 validation succeeded")
-    print(f"Checked {len(knowledge_files())} knowledge notes and 4 required templates.")
+    print(
+        f"Checked {len(knowledge_files(DEFAULT_ROOT))} knowledge notes "
+        "and 4 required templates."
+    )
     return 0
 
 
