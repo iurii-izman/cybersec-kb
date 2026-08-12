@@ -1,14 +1,13 @@
 ---
 type: concept
 domain:
-  - general
   - web
 techniques:
   - "[[Content Discovery]]"
-status: learned
-confidence: 2
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # Wordlists

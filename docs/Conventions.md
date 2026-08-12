@@ -15,34 +15,45 @@
 Каждая knowledge-заметка использует одни и те же базовые поля:
 
 ```yaml
-type:
+type: concept
 domain:
-techniques:
-status:
-confidence:
+  - general
+techniques: []
+status: new
+confidence: 1
 source:
+  - other
 ```
 
 | Property | Семантика | Default в шаблоне |
 |---|---|---|
 | `type` | Тип сущности | Тип выбранного шаблона |
-| `domain` | Один или несколько расширяемых domains | `[general]` |
-| `techniques` | Wikilinks на применимые или использованные Techniques; `[]`, если связей пока нет | `[]` или явный placeholder |
+| `domain` | Один или несколько расширяемых domains | список с `general` |
+| `techniques` | Wikilinks на применимые или использованные Techniques; `[]`, если связей пока нет | `[]` |
 | `status` | Стадия освоения | `new` |
 | `confidence` | Субъективная уверенность от 1 до 5 | `1` |
-| `source` | Один или несколько источников знания | `[other]`, для THM Lab — `[tryhackme]` |
+| `source` | Один или несколько источников знания | список с `other` |
 
-Для самой Technique поле `techniques` обычно остаётся пустым. У Concept оно показывает применимые техники, у Tool — поддерживаемые техники, у Lab — реально использованные техники.
+Для самой Technique поле `techniques` обычно остаётся пустым. У Concept оно показывает применимые техники, у Tool — поддерживаемые техники, у Lab — реально использованные техники. Каждый элемент — quoted wikilink на существующую заметку в `20 Techniques`. У реальной Tool-заметки должна быть хотя бы одна Technique.
 
 Допустимые `type`: `concept`, `technique`, `tool`, `lab`, `cheatsheet`.
 
-Допустимые `status`: `new`, `learned`, `practiced`, `confident`.
+`status` отражает подтверждённую стадию:
 
-`confidence` — целое число от 1 до 5. Стартовые domains: `web`, `network`, `linux`, `windows`, `active-directory`, `cloud`, `osint`, `cryptography`, `malware`, `defensive-security`, `general`. Domain остаётся расширяемым списком.
+- `new` — заметка создана, личное понимание ещё не подтверждено;
+- `learned` — могу объяснить основу своими словами;
+- `practiced` — самостоятельно применил в разрешённой Lab;
+- `confident` — могу выбрать и применить без постоянной подсказки.
 
-`status` отражает путь `new` → `learned` → `practiced` → `confident`, но повышается только при наличии собственного понимания или практики. Стартовые sources: `tryhackme`, `hackthebox`, `portswigger`, `book`, `course`, `documentation`, `personal-lab`, `other`; список можно расширять осмысленно.
+`confidence` — отдельная субъективная уверенность от 1 до 5: `1` почти не помню, `2` понимаю с подсказкой, `3` могу повторить, `4` применяю самостоятельно, `5` могу уверенно объяснить и выбрать. `status` повышается по evidence, а `confidence` не обязана расти синхронно.
 
-Перед использованием шаблона заменить или удалить все placeholders. `{{title}}` поддерживается встроенным Obsidian Templates и берёт имя файла заметки.
+Стартовые domains: `web`, `network`, `linux`, `windows`, `active-directory`, `cloud`, `osint`, `cryptography`, `malware`, `defensive-security`, `general`. `general` — временный fallback; удалить его после выбора более точного domain.
+
+Стартовые sources: `tryhackme`, `hackthebox`, `portswigger`, `book`, `course`, `documentation`, `personal-lab`, `other`. `other` — временный fallback; заменить его, если точный source известен. Перед расширением domain/source искать существующее значение; новые tokens записывать в lowercase kebab-case.
+
+Для реальной THM Lab заменить `other` на `tryhackme`; для другой платформы выбрать её фактический source.
+
+Перед использованием шаблона заполнить или удалить текстовые подсказки. `{{title}}` поддерживается встроенным Obsidian Templates и берёт имя файла заметки. Если Technique пока нет, оставлять всю запись `techniques: []`, а не пустой YAML list item.
 
 ## Имена файлов
 

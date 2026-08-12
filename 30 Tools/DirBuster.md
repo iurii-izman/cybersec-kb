@@ -4,10 +4,11 @@ domain:
   - web
 techniques:
   - "[[Content Discovery]]"
-status: learned
-confidence: 2
+  - "[[Web Enumeration]]"
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # DirBuster

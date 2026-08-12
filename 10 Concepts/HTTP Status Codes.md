@@ -5,8 +5,8 @@ domain:
 techniques:
   - "[[Web Enumeration]]"
   - "[[Content Discovery]]"
-status: learned
-confidence: 2
+status: new
+confidence: 1
 source:
   - documentation
 ---

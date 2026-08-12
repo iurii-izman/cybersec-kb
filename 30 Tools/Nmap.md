@@ -5,10 +5,10 @@ domain:
   - web
 techniques:
   - "[[Web Enumeration]]"
-status: learned
-confidence: 2
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # Nmap

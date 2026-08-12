@@ -3,10 +3,10 @@ type: technique
 domain:
   - web
 techniques: []
-status: learned
-confidence: 2
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # Content Discovery

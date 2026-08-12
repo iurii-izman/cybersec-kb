@@ -8,6 +8,7 @@
 - **Technique** — какую задачу нужно решить.
 - **Tool** — чем и как выполнить технику.
 - **Lab** — где знание применялось и как интерпретировался результат.
+- **Cheatsheet** — необязательная краткая карта уже повторяющегося workflow.
 
 Главный принцип: **Technique > Tool**. Платформы вроде TryHackMe, HTB и PortSwigger дают практику, но не задают структуру базы.
 
@@ -23,6 +24,7 @@
 90 Templates/       шаблоны Obsidian
 docs/               компактные соглашения
 scripts/            read-only проверка Vault
+tests/              regression tests validator
 Home.md             ручная стартовая карта
 ```
 
@@ -50,7 +52,7 @@ Link notes → validate → review diff → commit
 
 `00 Inbox` — временный capture, а не архив. Во время урока сырые заметки допустимы; после законченного смыслового блока reusable knowledge переносится в Concepts, Techniques и Tools, а практический контекст остаётся в Lab. Не нужно очищать Inbox после каждого действия, но его следует периодически разбирать.
 
-Перед созданием постоянной заметки найти существующую сущность по имени и смыслу. Если её нет, скопировать подходящий файл из `90 Templates`, заменить placeholders и добавить осмысленные `[[wikilinks]]`.
+Перед созданием постоянной заметки найти существующую сущность по имени и смыслу. Если её нет: создать файл с окончательным именем в нужной папке, выполнить **Templates: Insert template**, заполнить подсказки и добавить осмысленные `[[wikilinks]]`. Для Tool обязательно указать хотя бы одну существующую Technique в Property `techniques`. Cheatsheet создаётся вручную только после появления реально повторяющегося workflow; отдельного шаблона в v0.1 намеренно нет.
 
 ## Первый Field Test
 
@@ -62,24 +64,28 @@ Link notes → validate → review diff → commit
 
 ## Проверка
 
-Нужен только Python 3; внешних пакетов нет:
+Нужен только Python 3.10+; внешних пакетов нет:
 
 ```powershell
 python -m unittest discover
 python scripts/validate_kb.py
 ```
 
-Unit tests проверяют позитивный fixture, основные ошибки и read-only поведение. Validator только читает файлы и возвращает ненулевой exit code при ошибке. Его упрощённая проверка YAML намеренно не заменяет полный YAML parser.
+Unit tests проверяют позитивный fixture, негативные сценарии и read-only поведение. Validator только читает файлы и возвращает ненулевой exit code при ошибке. Он намеренно поддерживает строгий subset YAML: top-level scalars, `[]` и списки с отступом в два пробела; advanced YAML syntax для v0.1 не нужна и отклоняется с понятной ошибкой.
 
 После успешной проверки просмотреть и сохранить понятный блок работы:
 
 ```powershell
 git status --short
 git diff
-git add --all
+git diff --check
+git add -- path/to/changed-note.md
 git diff --cached
+git diff --cached --check
 git commit -m "Add THM room notes"
 ```
+
+Перед возможной будущей публикацией отдельно проверить author name/email в Git history и настроить приемлемую public identity. Существующую историю автоматически не переписывать.
 
 Подробные Properties и naming rules: [docs/Conventions.md](docs/Conventions.md).
 

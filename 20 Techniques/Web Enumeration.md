@@ -4,10 +4,10 @@ domain:
   - web
   - network
 techniques: []
-status: learned
-confidence: 2
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # Web Enumeration

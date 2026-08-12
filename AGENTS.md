@@ -32,11 +32,11 @@ TryHackMe, Hack The Box и PortSwigger — источники практики, 
 
 ## Minimal architecture
 
-Не добавлять плагины, frameworks, dependencies, новые Properties или типы сущностей без реальной необходимости. Vault должен оставаться обычной переносимой Markdown-директорией.
+Не добавлять плагины, frameworks или dependencies без явной необходимости в утверждённом scope. Новые Properties, типы сущностей и architectural layers добавлять только по явному решению пользователя. Vault должен оставаться обычной переносимой Markdown-директорией.
 
 ## No autonomous v0.2
 
-Без явного запроса пользователя не добавлять Dataview, Anki, MITRE/OWASP mappings, AI ingestion, automation, dashboards, Procedures/Playbooks или новые сущности.
+Без явного запроса пользователя не добавлять Dataview, Anki, MITRE/OWASP mappings, AI ingestion, automation, dashboards, Procedures/Playbooks или новые типы сущностей. Обычные заметки утверждённых типов создавать только при наличии отдельного знания и после поиска дублей.
 
 ## Properties and naming
 
@@ -48,4 +48,4 @@ TryHackMe, Hack The Box и PortSwigger — источники практики, 
 
 ## Validate before commit
 
-Перед завершением изменений запускать `python -m unittest discover` и `python scripts/validate_kb.py`, затем просматривать `git diff` и `git diff --check`. Validator read-only; не изменять заметки автоматически для сокрытия ошибок.
+Перед завершением изменений запускать `python -m unittest discover` и `python scripts/validate_kb.py`, затем просматривать `git diff`, `git diff --check`, staged diff и `git diff --cached --check`. Validator read-only; не изменять заметки автоматически для сокрытия ошибок.

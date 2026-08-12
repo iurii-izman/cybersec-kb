@@ -4,10 +4,11 @@ domain:
   - web
 techniques:
   - "[[Content Discovery]]"
-status: learned
-confidence: 2
+  - "[[Web Enumeration]]"
+status: new
+confidence: 1
 source:
-  - tryhackme
+  - other
 ---
 
 # DIRB
@@ -74,7 +75,7 @@ dirb http://TARGET/ /path/to/wordlist.txt
 | Параметр | Назначение |
 |---|---|
 | `-X .ext` | Проверять заданные расширения, если это оправдано технологией |
-| `-r` | Не следовать redirects автоматически, чтобы видеть исходный сигнал |
+| `-r` | Отключить recursive search и ограничить текущий проход |
 
 ## Как читать результат
 
