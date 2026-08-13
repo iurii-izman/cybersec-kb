@@ -3,10 +3,10 @@ type: technique
 domain:
   - web
 techniques: []
-status: new
-confidence: 1
+status: practiced
+confidence: 2
 source:
-  - other
+  - tryhackme
 ---
 
 # Content Discovery
@@ -74,6 +74,7 @@ Manually verify useful candidates
 
 ## Labs
 
+- [[THM - Offensive Security Intro]] — скрытые страницы FakeBank найдены с помощью [[DIRB]].
 - [[THM - Content Discovery Example]] — example / seed
 
 ## Проверка себя

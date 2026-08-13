@@ -4,22 +4,21 @@ domain:
   - web
 techniques:
   - "[[Content Discovery]]"
-  - "[[Web Enumeration]]"
-status: new
-confidence: 1
+status: practiced
+confidence: 2
 source:
-  - other
+  - tryhackme
 ---
 
 # DIRB
 
 ## Что это
 
-DIRB — консольный web content scanner, который проверяет кандидаты из [[Wordlists]] по заданному base URL.
+DIRB — CLI-инструмент для dictionary-based Web Content Discovery, который проверяет кандидаты из [[Wordlists]] по заданному base URL.
 
 ## Для чего нужен
 
-Автоматизирует dictionary-based [[Content Discovery]] и показывает HTTP-responses для возможных ресурсов.
+Ищет существующие или скрытые directories, files, paths и endpoints в рамках [[Content Discovery]].
 
 ## Когда использовать
 
@@ -70,6 +69,25 @@ dirb http://TARGET/ /path/to/wordlist.txt
 
 **Next step:** проверить корректность URL и baseline; расширять список только при обоснованной гипотезе.
 
+### Найти скрытые страницы FakeBank
+
+**Goal:** найти скрытые страницы учебного приложения FakeBank, отсутствующие в обычной навигации.
+
+**Action:**
+
+```bash
+dirb http://fakebank.thm
+```
+
+**Evidence:**
+
+- `http://fakebank.thm/images`
+- `http://fakebank.thm/bank-transfer`
+
+**Interpretation:** web-приложение может содержать доступные пути, не представленные ссылками в UI, и [[Content Discovery]] позволяет обнаруживать такие ресурсы. `/bank-transfer` представляет больший интерес для дальнейшего анализа как функциональный endpoint приложения, но само обнаружение endpoint ещё не является доказательством vulnerability.
+
+**Next step:** открыть найденный endpoint и исследовать его назначение и поведение в рамках учебной лаборатории.
+
 ## Важные параметры
 
 | Параметр | Назначение |
@@ -86,6 +104,8 @@ dirb http://TARGET/ /path/to/wordlist.txt
 - Сначала установить baseline для несуществующего пути.
 - Подбирать [[Wordlists]] по цели.
 - Контролировать нагрузку и scope.
+- DIRB — content discovery/scanning tool, а не vulnerability scanner; найденный endpoint является объектом дальнейшего исследования.
+- В уроке использовалась терминология `dirbuster`, при этом фактически выполнялась команда `dirb`; в этой базе практический evidence относится к DIRB.
 
 ## Типичные ошибки
 
@@ -99,6 +119,7 @@ dirb http://TARGET/ /path/to/wordlist.txt
 
 ## Где использовал
 
+- [[THM - Offensive Security Intro]] — Task 3, поиск скрытых страниц FakeBank.
 - [[THM - Content Discovery Example]] — example / seed, без реального сканирования.
 
 ## Что запомнить
