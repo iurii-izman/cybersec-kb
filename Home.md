@@ -4,31 +4,41 @@
 
 ## Последняя практика
 
-- [[THM - Offensive Security Intro]]
+- [[THM - Search Skills]]
 
 ## Текущие направления
 
 - Web security: [[Web Enumeration]] → [[Content Discovery]]
+- Security research / OSINT: [[Security Information Research]]
 
 ## Concepts
 
 - [[HTTP]]
 - [[HTTP Status Codes]]
 - [[Wordlists]]
+- [[CVE]]
+- [[CVSS]]
+- [[Proof of Concept]]
+- [[Man Pages]]
 
 ## Techniques
 
 - [[Web Enumeration]]
 - [[Content Discovery]]
+- [[Security Information Research]]
 
 ## Tools
 
 - [[Nmap]]
 - [[DIRB]]
 - [[DirBuster]]
+- [[Shodan]]
+- [[VirusTotal]]
+- [[GitHub]]
 
 ## Labs
 
+- [[THM - Search Skills]]
 - [[THM - Offensive Security Intro]]
 - [[THM - Content Discovery Example]] — example / seed
 
