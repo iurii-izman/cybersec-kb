@@ -1,5 +1,13 @@
+# Obsidian UI/session state
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+.obsidian/workspaces.json
+
+# Obsidian cache and currently empty local appearance state
+.obsidian/cache/
+.obsidian/.cache/
+.obsidian/appearance.json
+
 .trash/
 __pycache__/
 *.py[cod]
