@@ -4,12 +4,13 @@
 
 ## Последняя практика
 
-- [[THM - Search Skills]]
+- [[THM - Linux Fundamentals (Pt1)]]
 
 ## Текущие направления
 
 - Web security: [[Web Enumeration]] → [[Content Discovery]]
 - Security research / OSINT: [[Security Information Research]]
+- Linux fundamentals: [[Linux Filesystem Navigation]] → [[Linux File and Text Search]] · [[Shell Command Chaining and Redirection]]
 
 ## Concepts
 
@@ -20,12 +21,16 @@
 - [[CVSS]]
 - [[Proof of Concept]]
 - [[Man Pages]]
+- [[Linux Shell]]
 
 ## Techniques
 
 - [[Web Enumeration]]
 - [[Content Discovery]]
 - [[Security Information Research]]
+- [[Linux Filesystem Navigation]]
+- [[Linux File and Text Search]]
+- [[Shell Command Chaining and Redirection]]
 
 ## Tools
 
@@ -38,6 +43,7 @@
 
 ## Labs
 
+- [[THM - Linux Fundamentals (Pt1)]]
 - [[THM - Search Skills]]
 - [[THM - Offensive Security Intro]]
 - [[THM - Content Discovery Example]] — example / seed
